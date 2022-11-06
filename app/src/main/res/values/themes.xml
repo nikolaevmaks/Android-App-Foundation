@@ -1,0 +1,133 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+	<!-- Base application theme. -->
+	<style name="Theme.AppFoundation" parent="Theme.MaterialComponents.Light.NoActionBar">
+		<!-- Primary brand color. -->
+		<item name="colorPrimary">@color/purple_500</item>
+		<item name="colorPrimaryVariant">@color/purple_700</item>
+		<item name="colorOnPrimary">@color/white</item>
+
+		<!-- Secondary brand color. -->
+		<item name="colorSecondary">@color/teal_200</item>
+		<item name="colorSecondaryVariant">@color/teal_700</item>
+		<item name="colorOnSecondary">@color/black</item>
+
+		<!-- Status bar color. -->
+		<item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+		<!-- Customize your theme here. -->
+
+		<item name="android:windowLayoutInDisplayCutoutMode" tools:ignore="NewApi">shortEdges</item>
+	</style>
+
+	<style name="ThemeActivity" parent="Theme.AppFoundation">
+		<item name="android:statusBarColor" tools:ignore="NewApi">@color/status_bar</item>
+		<item name="android:windowBackground">@color/white</item>
+	</style>
+
+
+
+	<style name="ThemeActivity.Fullscreen" parent="ThemeActivity">
+		<item name="android:windowFullscreen">true</item>
+	</style>
+
+	<style name="ThemeActivity.Transparent" parent="Theme.AppFoundation">
+		<item name="android:windowIsTranslucent">true</item>
+		<item name="android:windowBackground">@color/transparent</item>
+	</style>
+
+
+
+	<style name="ThemeActivity.Splash" parent="Theme.AppFoundation">
+		<item name="android:statusBarColor">@color/status_bar_splash</item>
+		<item name="android:windowBackground">?colorPrimary</item>
+
+		<item name="android:windowTranslucentNavigation">false</item>
+		<item name="android:navigationBarColor">@color/transparent</item>
+		<item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+		<item name="android:enforceNavigationBarContrast" tools:ignore="NewApi">false</item>
+	</style>
+
+
+	<style name="ThemeActivity.Main" parent="Theme.AppFoundation">
+		<item name="android:statusBarColor">@color/transparent</item>
+		<item name="android:windowBackground">@color/white</item>
+	</style>
+
+
+
+
+
+	<style name="ToolbarApp">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">?actionBarSize</item>
+	</style>
+
+	<style name="AppBarApp">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+
+		<item name="android:background">?colorPrimary</item>
+		<item name="android:elevation">@dimen/toolbar_elevation_app</item>
+	</style>
+
+
+
+
+	<!-- Dialog -->
+
+	<style name="DialogAppBase" parent="Theme.AppCompat.Light.Dialog">
+
+		<item name="android:statusBarColor">@color/transparent</item>
+
+		<item name="android:windowBackground">@color/transparent</item>
+		<item name="android:windowIsFloating">false</item>
+
+		<item name="android:windowDrawsSystemBarBackgrounds" tools:ignore="NewApi">true</item>
+
+		<!-- without will be exception on show-->
+		<item name="windowNoTitle">true</item>
+
+		<item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
+	</style>
+
+	<style name="DialogApp" parent="DialogAppBase">
+
+		<item name="android:navigationBarColor">@color/transparent</item>
+		<item name="android:backgroundDimAmount">0.4</item>
+	</style>
+
+	<style name="DialogTransparentApp" parent="DialogAppBase">
+		<item name="android:windowIsFloating">true</item>
+		<item name="android:backgroundDimAmount">0</item>
+	</style>
+
+	<style name="DialogHintsApp" parent="DialogAppBase">
+		<item name="android:navigationBarColor">@color/transparent</item>
+		<item name="android:backgroundDimAmount">0.8</item>
+	</style>
+
+
+	<!-- Bottom sheet dialog -->
+
+	<style name="BottomSheetDialogApp" parent="DialogAppBase">
+
+		<item name="android:backgroundDimAmount">0.0</item>
+
+		<item name="android:windowAnimationStyle">@null</item>
+	</style>
+
+	<!-- CardView in dialog -->
+
+	<style name="CardViewDialog">
+		<item name="cardElevation">16dp</item>
+		<item name="cardCornerRadius">@dimen/dialog_corner_radius</item>
+		<item name="cardBackgroundColor">@color/white</item>
+	</style>
+
+
+
+	<!-- Roboto Regular -->
+	<style name="TextRegular"><item name="android:textStyle">normal</item><item name="android:textColor">@color/white</item></style>
+	<style name="TextRegular.13sp"><item name="android:textSize">13sp</item></style>
+	<style name="TextRegular.13sp.Black87per"><item name="android:textColor">@color/black_87per</item></style>
+
+</resources>

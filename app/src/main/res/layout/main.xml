@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		tools:ignore="RtlHardcoded,UseCompatTextViewDrawableXml,SpUsage,ContentDescription"
+		android:id="@+id/view_content"
+		android:layout_width="match_parent" android:layout_height="match_parent">
+
+	<LinearLayout android:id="@+id/view_bottom_navigation_bar"
+			android:layout_width="match_parent" android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:elevation="@dimen/bottom_navigation_bar_elevation"
+			android:background="@color/white"
+			android:orientation="vertical">
+
+		<LinearLayout android:id="@+id/view_bottom_navigation_bar_content"
+				android:layout_width="match_parent" android:layout_height="@dimen/bottom_navigation_bar_height"
+				android:baselineAligned="false"
+				android:orientation="horizontal">
+
+			<FrameLayout android:id="@+id/view_products"
+					android:layout_width="0dp" android:layout_height="match_parent"
+					android:background="@drawable/selector_bottom_navigation_bg"
+					android:layout_weight="1">
+				<TextView android:id="@+id/text_products"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:text="@string/bottom_navigation_products"
+						android:textAppearance="@style/TextRegular.13sp.Black87per"/>
+			</FrameLayout>
+
+			<FrameLayout android:id="@+id/view_profile"
+					android:layout_width="0dp" android:layout_height="match_parent"
+					android:background="@drawable/selector_bottom_navigation_bg"
+					android:layout_weight="1">
+				<TextView android:id="@+id/text_profile"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:layout_gravity="center"
+						android:text="@string/bottom_navigation_profile"
+						android:textAppearance="@style/TextRegular.13sp.Black87per"/>
+			</FrameLayout>
+		</LinearLayout>
+
+		<View android:id="@+id/view_bottom_navigation_bar_bottom"
+				android:layout_width="match_parent" android:layout_height="0dp"
+				android:background="@color/white"/>
+	</LinearLayout>
+
+	<FrameLayout android:id="@+id/view_content_fragments"
+			android:layout_width="match_parent" android:layout_height="match_parent"/>
+
+</RelativeLayout>

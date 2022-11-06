@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- see abc_alert_dialog_material.xml -->
+<androidx.percentlayout.widget.PercentFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		android:id="@+id/view_dialog_window"
+		android:layout_width="match_parent" android:layout_height="match_parent">
+
+	<androidx.cardview.widget.CardView style="@style/CardViewDialog"
+			android:id="@+id/view_dialog_card"
+			android:layout_width="match_parent" android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			app:layout_marginLeftPercent="@dimen/dialog_margin_horizontal_percent"
+			app:layout_marginRightPercent="@dimen/dialog_margin_horizontal_percent"
+			android:layout_marginTop="@dimen/dialog_margin_vertical"
+			android:layout_marginBottom="@dimen/dialog_margin_vertical"/>
+
+</androidx.percentlayout.widget.PercentFrameLayout>

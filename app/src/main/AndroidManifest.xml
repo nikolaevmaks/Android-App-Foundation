@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:hardwareAccelerated="true">
+
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<!-- for getActiveNetworkInfo in WebRequest -->
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+	<uses-permission android:name="android.permission.VIBRATE"/>
+
+	<application android:name=".App"
+			android:allowBackup="false"
+			android:supportsRtl="false"
+			android:icon="@mipmap/ic_launcher"
+			android:label="@string/app_name"
+			android:roundIcon="@mipmap/ic_launcher_round"
+			android:theme="@style/Theme.AppFoundation"
+			tools:ignore="DataExtractionRules">
+
+		<meta-data android:name="io.sentry.dsn" android:value=""/>
+
+		<activity android:name=".features.common.view.SplashActivity"
+				android:theme="@style/ThemeActivity.Splash"
+				android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
+
+		<activity android:name=".features.common.view.MainActivity"
+				android:theme="@style/ThemeActivity.Main"
+				android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+			</intent-filter>
+		</activity>
+
+
+
+
+
+		<receiver android:name=".utils.AppUpdatedBroadcastReceiver"
+				android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+			</intent-filter>
+		</receiver>
+	</application>
+
+</manifest>

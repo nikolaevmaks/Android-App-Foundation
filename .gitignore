@@ -1,0 +1,12 @@
+app/build
+.idea
+!.idea/codeStyleSettings.xml
+*.iml
+.gradle
+captures/
+local.properties
+gradlew
+gradlew.bat
+.DS_Store
+.externalNativeBuild
+.cxx

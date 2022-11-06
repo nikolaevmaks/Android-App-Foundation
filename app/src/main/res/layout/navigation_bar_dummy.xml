@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- elevation more than @dimen/design_snackbar_elevation -->
+<View xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/view_navigation_bar_dummy"
+		android:layout_width="match_parent" android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:elevation="8dp"
+		android:outlineProvider="none"
+		android:background="@color/white"/>

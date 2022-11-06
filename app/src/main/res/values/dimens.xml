@@ -1,0 +1,16 @@
+<resources>
+
+
+	<!-- Dialog -->
+	<!-- see Base.Theme.AppCompat.Light.Dialog.Alert -->
+	<dimen name="dialog_margin_horizontal_percent">7%</dimen>
+	<dimen name="dialog_margin_vertical">16dp</dimen>
+	<dimen name="dialog_corner_radius">4dp</dimen>
+
+
+	<dimen name="toolbar_elevation_app">4dp</dimen>
+
+	<!-- Bottom navigation bar -->
+	<dimen name="bottom_navigation_bar_elevation">8dp</dimen>
+	<dimen name="bottom_navigation_bar_height">50dp</dimen>
+</resources>

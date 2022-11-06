@@ -1,0 +1,29 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:tools="http://schemas.android.com/tools">
+
+	<!-- Activity -->
+
+	<style name="ThemeActivity" parent="Theme.AppFoundation">
+		<item name="android:statusBarColor">@color/status_bar</item>
+		<item name="android:windowBackground">@color/white</item>
+
+
+		<item name="android:windowTranslucentNavigation">false</item>
+		<item name="android:navigationBarColor">@color/transparent</item>
+		<item name="android:enforceNavigationBarContrast" tools:ignore="NewApi">false</item>
+		<item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
+	</style>
+
+
+
+	<style name="ThemeActivity.Main" parent="ThemeActivity">
+		<item name="android:statusBarColor">@color/transparent</item>
+		<item name="android:windowBackground">@color/white</item>
+
+		<item name="android:windowTranslucentNavigation">false</item>
+		<item name="android:navigationBarColor">@color/transparent</item>
+		<item name="android:enforceNavigationBarContrast" tools:ignore="NewApi">false</item>
+		<!-- attribute windowLightNavigationBar added only in API level 27 -->
+	</style>
+
+</resources>

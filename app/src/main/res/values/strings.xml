@@ -1,0 +1,13 @@
+<resources>
+	<string name="app_name">App Foundation</string>
+
+	<string name="common_loading">Loading&#8230;</string>
+	<string name="common_error_internet">The Internet connection appears to be offline.</string>
+	<string name="common_error_unknown">An unexpected error occurred. Please try again.</string>
+	<string name="common_retry">Retry</string>
+
+
+	<string name="bottom_navigation_products">Products</string>
+	<string name="bottom_navigation_profile">Profile</string>
+
+</resources>
