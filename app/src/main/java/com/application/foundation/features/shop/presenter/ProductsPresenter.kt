@@ -81,4 +81,8 @@ class ProductsPresenter : BaseFragmentPresenter(), ProductsPresenterInterface {
 
 	override fun onProductClicked(product: Product) {
 	}
+
+	override fun onBackPressed(): Boolean {
+		return true
+	}
 }

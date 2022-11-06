@@ -20,4 +20,9 @@ class ProfilePresenter : BaseFragmentPresenter(), ProfilePresenterInterface {
 
 	override val isContentViewHiddenInitial: Boolean
 		get() = false
+
+
+	override fun onBackPressed(): Boolean {
+		return true
+	}
 }
