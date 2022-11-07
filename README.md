@@ -5,6 +5,7 @@
 <br/><br/>
 App uses MVP architecture with custom implementation of Fragment which is simple to use unlike Android standard Fragment.
 See *BaseActivity* / *BasePresenter*, *BaseFragment* / *BaseFragmentPresenter*, *RequestBase* classes.
+Fragment is just a simple View + lifecycle similar to Android Fragment lifecycle.
 
 Also I use app architecture something like Android ViewModel, but it is more customizable and flexible, you can customize everything as you want.
 See *RequestBase*, *RequestsObserver*, *RequestWaitPerformer* classes.
