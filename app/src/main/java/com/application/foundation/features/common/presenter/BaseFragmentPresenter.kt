@@ -21,8 +21,6 @@ import com.application.foundation.utils.CommonUtils
 
 abstract class BaseFragmentPresenter : FragmentPresenterInterface, RequestsListenersFeature.Listener {
 
-	override var hasOptionsMenu = true
-
 	private lateinit var fragment: BaseFragment
 	private lateinit var activityPresenter: PresenterInterface
 
@@ -124,6 +122,9 @@ abstract class BaseFragmentPresenter : FragmentPresenterInterface, RequestsListe
 	override val isToolbarHomeAsUpEnabled: Boolean
 		get() = false
 
+	override val hasOptionsMenu: Boolean
+		get() = false
+
 	@CallSuper
 	override fun onCreateOptionsMenu(menu: Menu) {
 		updateHomeAsUpEnabled()
@@ -133,10 +134,17 @@ abstract class BaseFragmentPresenter : FragmentPresenterInterface, RequestsListe
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		when (item.itemId) {
 			android.R.id.home -> {
-				onFinishingAfterBackPress()
-				activity.popFragmentFromStack()
+				if (onOptionsItemUpSelected()) {
+					onFinishingAfterBackPress()
+					activity.popFragmentFromStack()
+				}
 			}
 		}
+		return true
+	}
+
+	// return true - pop fragment
+	open fun onOptionsItemUpSelected(): Boolean {
 		return true
 	}
 

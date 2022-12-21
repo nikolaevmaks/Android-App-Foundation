@@ -22,7 +22,7 @@ interface FragmentPresenterInterface : BasePresenterInterface {
 	val argumentsNullable: Bundle?
 	val arguments: Bundle
 
-	var hasOptionsMenu: Boolean
+	val hasOptionsMenu: Boolean
 
 
 	fun onCreate(savedInstanceState: Bundle?)

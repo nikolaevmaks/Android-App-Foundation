@@ -485,7 +485,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityInterface {
 		}
 	}
 
-	override fun setFragmentStack(stackTag: String) {
+	override fun setFragmentStack(stackTag: String, vararg topFragmentsTagsToAttach: String) {
 
 		if (stackTag == currentFragmentStackTag) {
 			return
@@ -493,12 +493,18 @@ abstract class BaseActivity : AppCompatActivity(), ActivityInterface {
 
 		var prevFragment: BaseFragment? = null
 		var currentFragment: BaseFragment? = null
-		var isDetached = false
 
 		var backStack = currentFragmentStack
 		if (backStack != null) {
-			prevFragment = backStack.peekLast()
-			isDetached = prevFragment.isDetached
+
+			val iterator = backStack.descendingIterator()
+			while (iterator.hasNext()) {
+				val fragment = iterator.next()
+				if (!fragment.isDetached && fragment.getPresenter().hasOptionsMenu) {
+					prevFragment = fragment
+					break
+				}
+			}
 
 			detachFragmentsFromStack(backStack)
 		}
@@ -507,12 +513,30 @@ abstract class BaseActivity : AppCompatActivity(), ActivityInterface {
 
 		backStack = currentFragmentStack
 		if (backStack != null) {
-			currentFragment = backStack.peekLast()
-			currentFragment?.navigate()
+
+			if (topFragmentsTagsToAttach.isEmpty()) {
+				currentFragment = backStack.peekLast()
+				currentFragment?.navigate()
+			} else {
+				val iterator = backStack.descendingIterator()
+				while (iterator.hasNext()) {
+					val fragment = iterator.next()
+
+					if (fragment.isDetached) {
+						fragment.navigate()
+
+						if (fragment.getPresenter().hasOptionsMenu) {
+							currentFragment = fragment
+						}
+					}
+					if (topFragmentsTagsToAttach.contains(fragment.tag)) {
+						break
+					}
+				}
+			}
 		}
 
-		invalidateOptionsMenuIfRequired(currentFragment,
-				if (prevFragment == null || isDetached) null else prevFragment)
+		invalidateOptionsMenuIfRequired(currentFragment, prevFragment)
 	}
 
 
@@ -535,7 +559,9 @@ abstract class BaseActivity : AppCompatActivity(), ActivityInterface {
 			prevFragment.remove()
 
 			val currentFragment = backStack.peekLast()
-			currentFragment?.navigate()
+			if (currentFragment?.isDetached == true) {
+				currentFragment.navigate()
+			}
 
 			invalidateOptionsMenuIfRequired(currentFragment, if (isDetached) null else prevFragment)
 		}
@@ -828,6 +854,7 @@ abstract class BaseActivity : AppCompatActivity(), ActivityInterface {
 		return true
 	}
 
+	// return false to allow normal menu processing to proceed
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		if (checkClick()) {
 			return false

@@ -315,14 +315,22 @@ abstract class BaseFragment {
 	protected open fun onRestoreInstanceState(savedInstanceState: Bundle?) {
 	}
 
+	private val onLayoutChangeListener = OnGlobalLayoutListener { onLayout() }
+
+	open fun onLayout() {
+	}
+
 	@CallSuper
 	protected open fun onViewAttached() {
 		presenter.onViewAttached()
+
+		view.viewTreeObserver.addOnGlobalLayoutListener(onLayoutChangeListener)
 	}
 
 
 	@CallSuper
 	protected open fun onViewBeforeDetached() {
+		view.viewTreeObserver.removeOnGlobalLayoutListener(onLayoutChangeListener)
 	}
 
 	@CallSuper
@@ -705,8 +713,8 @@ abstract class BaseFragment {
 	}
 
 	@CallSuper
-	protected open fun onSaveInstanceState(outState: Bundle?) {
-		presenter.onSaveInstanceState(outState!!)
+	protected open fun onSaveInstanceState(outState: Bundle) {
+		presenter.onSaveInstanceState(outState)
 	}
 
 	@CallSuper

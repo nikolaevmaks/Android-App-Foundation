@@ -47,7 +47,7 @@ interface ActivityInterface {
 
 	val isCurrentFragmentStackEmpty: Boolean
 
-	fun setFragmentStack(stackTag: String)
+	fun setFragmentStack(stackTag: String, vararg topFragmentsTagsToAttach: String)
 
 	val allFragments: List<BaseFragment>
 	val attachedFragments: List<BaseFragment>

@@ -264,7 +264,9 @@ abstract class BasePresenter : PresenterInterface, RequestsListenersFeature.List
 	@CallSuper
 	override fun onCreateOptionsMenu(menu: Menu) {
 		for (fragment in activity.attachedFragments) {
-			fragment.getPresenter().onCreateOptionsMenu(menu)
+			if (fragment.getPresenter().hasOptionsMenu) {
+				fragment.getPresenter().onCreateOptionsMenu(menu)
+			}
 		}
 	}
 
@@ -273,7 +275,7 @@ abstract class BasePresenter : PresenterInterface, RequestsListenersFeature.List
 		activity.finish()
 	}
 
-	// return false - return false to allow normal menu processing to proceed
+	// return false to allow normal menu processing to proceed
 	@CallSuper
 	override fun onOptionsItemSelected(item: MenuItem): Boolean {
 		val fragments = activity.currentFragmentStack

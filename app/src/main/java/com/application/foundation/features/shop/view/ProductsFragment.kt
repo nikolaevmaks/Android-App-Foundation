@@ -56,7 +56,9 @@ class ProductsFragment : BaseFragment(), ProductsAdapter.Listener {
 	}
 
 
-	private val onLayoutChangeListener = ViewTreeObserver.OnGlobalLayoutListener { updateViewMargins() }
+	override fun onLayout() {
+		updateViewMargins()
+	}
 
 	private fun updateViewMargins() {
 		val lp = view.layoutParams as MarginLayoutParams
@@ -64,16 +66,6 @@ class ProductsFragment : BaseFragment(), ProductsAdapter.Listener {
 			lp.bottomMargin = viewBottomNavigationBar.height
 			view.requestLayout()
 		}
-	}
-
-	override fun onViewAttached() {
-		super.onViewAttached()
-		view.viewTreeObserver.addOnGlobalLayoutListener(onLayoutChangeListener)
-	}
-
-	override fun onViewBeforeDetached() {
-		super.onViewBeforeDetached()
-		view.viewTreeObserver.removeOnGlobalLayoutListener(onLayoutChangeListener)
 	}
 
 
