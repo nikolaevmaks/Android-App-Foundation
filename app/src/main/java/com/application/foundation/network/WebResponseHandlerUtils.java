@@ -18,7 +18,7 @@ import static com.application.foundation.App.getInjector;
 
 public class WebResponseHandlerUtils {
 
-	private static @Nullable String getRequestBody(WebRequest request) {
+	private static @Nullable String getRequestBody(WebRequestInterface request) {
 
 		Buffer buffer = new Buffer();
 
@@ -39,7 +39,7 @@ public class WebResponseHandlerUtils {
 		return requestString;
 	}
 
-	private static Map<String, String> getTags(WebRequest request, Integer responseCode) {
+	private static Map<String, String> getTags(WebRequestInterface request, Integer responseCode) {
 
 		Map<String, String> tags = new HashMap<>(mapCapacity(3));
 		tags.put("response code", responseCode == null ? null : Integer.toString(responseCode));
@@ -52,7 +52,7 @@ public class WebResponseHandlerUtils {
 	private static final String[] KEYS = new String[] {"password", "token"};
 
 
-	static void logJsonValidationError(@Nullable String message, WebRequest request, int responseCode) {
+	static void logJsonValidationError(@Nullable String message, WebRequestInterface request, int responseCode) {
 
 		// no need passwords and tokens in Sentry and analytics
 
@@ -81,7 +81,7 @@ public class WebResponseHandlerUtils {
 				null);
 	}
 
-	static <T> void logWebResponseError(@Nullable String error, WebRequest request, Integer responseCode, @Nullable T responseBody, boolean networkError) {
+	static <T> void logWebResponseError(@Nullable String error, WebRequestInterface request, Integer responseCode, @Nullable T responseBody, boolean networkError) {
 
 		// no need passwords and tokens in Sentry and analytics
 

@@ -137,6 +137,22 @@ class WebClient(private val context: Context?): WebClientInterface {
 		return request
 	}
 
+	private fun <T> sendTestResponse(builder: WebRequest.Builder,
+									 body: T?,
+									 handler: WebResponseHandler<T>,
+									 responseCode: Int? = 200,
+									 delay: Long = WebResponseHandler.REQUEST_DELAY): WebRequestInterface {
+
+		return builder.build(handler, client).also {
+
+			if (isTesting) {
+				lastRequest = it
+			}
+
+			handler.sendTestResponse(it, body, responseCode, delay)
+		}
+	}
+
 	@AnyThread
 	override fun populateHeaders(builder: RequestBuilder, accessTokenRequiredIfExists: Boolean) {
 		populateHeaders(builder, if (accessTokenRequiredIfExists) injector.token.accessToken else null)

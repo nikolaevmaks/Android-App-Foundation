@@ -11,7 +11,7 @@ abstract class RequestHandlerBaseResponseNullBodyAllowed<T : BaseResponse>(type:
 																		   private val responseCodeHandler: ResponseCodeHandler? = null) : ObjectHandler<T>(type, request) {
 
 
-	override fun onReceiveResult(body: T?, error: BaseResponse.Error?, responseCode: Int, request: WebRequest) {
+	override fun onReceiveResult(body: T?, error: BaseResponse.Error?, responseCode: Int, request: WebRequestInterface) {
 
 		if (responseCodeHandler != null && responseCodeHandler.handleResponseCode(responseCode)) {
 

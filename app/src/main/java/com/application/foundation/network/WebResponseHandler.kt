@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import com.application.foundation.Environment
 import com.application.foundation.features.common.model.dto.BaseResponse
 import com.application.foundation.features.common.model.utils.RequestError
+import com.application.foundation.utils.CommonUtils
 import com.application.foundation.utils.LogUtils
 import okhttp3.Headers
 import okhttp3.Response
@@ -29,7 +30,7 @@ abstract class WebResponseHandler<T> {
 		}
 
 
-		fun logJsonValidationError(message: String?, request: WebRequest, responseCode: Int) {
+		fun logJsonValidationError(message: String?, request: WebRequestInterface, responseCode: Int) {
 			injector.applicationScope.launch(Dispatchers.IO) {
 				WebResponseHandlerUtils.logJsonValidationError(message, request, responseCode)
 			}
@@ -42,12 +43,12 @@ abstract class WebResponseHandler<T> {
 	var job: Job? = null
 
 
-	fun onFailure(request: WebRequest, exception: IOException?) {
+	fun onFailure(request: WebRequestInterface, exception: IOException?) {
 		headers = null
 		sendNetworkError(request, null, exception)
 	}
 
-	fun onResponse(request: WebRequest, response: Response) {
+	fun onResponse(request: WebRequestInterface, response: Response) {
 		headers = response.headers
 
 		job = injector.applicationScope.launch(Dispatchers.Default) {
@@ -58,25 +59,29 @@ abstract class WebResponseHandler<T> {
 	}
 
 
-	fun sendNetworkError(request: WebRequest, responseCode: Int?, exception: Exception?) {
+	fun sendNetworkError(request: WebRequestInterface, responseCode: Int?, exception: Exception?) {
 		logWebResponseError(exception?.toString(), request, responseCode, null, true)
 
 		send(request, null, null, networkError = true, unknownError = false, responseCode, exception)
 	}
 
-	fun sendUnknownError(request: WebRequest, responseCode: Int, exception: Exception?) {
+	fun sendUnknownError(request: WebRequestInterface, responseCode: Int, exception: Exception?) {
 		send(request, null, null, networkError = false, unknownError = true, responseCode, exception)
 	}
 
-	fun send(request: WebRequest, body: T?, error: BaseResponse.Error?, responseCode: Int?) {
+	fun send(request: WebRequestInterface, body: T?, error: BaseResponse.Error?, responseCode: Int?) {
 		send(request, body, error, networkError = false, unknownError = false, responseCode, null)
 	}
 
-	private fun send(request: WebRequest, body: T?, error: BaseResponse.Error?, networkError: Boolean, unknownError: Boolean,
-					 responseCode: Int?, exception: Exception?) {
 
-		job = injector.applicationScope.launch {
-			delay(REQUEST_DELAY)
+	fun sendTestResponse(request: WebRequestInterface, body: T?, responseCode: Int? = 200, delay: Long = REQUEST_DELAY) {
+		send(request, body, error = null, networkError = false, unknownError = false, responseCode, exception = null, delay)
+	}
+
+	private fun send(request: WebRequestInterface, body: T?, error: BaseResponse.Error?, networkError: Boolean, unknownError: Boolean,
+					 responseCode: Int?, exception: Exception?, delay: Long = REQUEST_DELAY) {
+
+		job = CommonUtils.launchDelayed(delay) {
 
 			job = null
 
@@ -84,7 +89,7 @@ abstract class WebResponseHandler<T> {
 
 			if (request.isAborted) {
 				LogUtils.logD(TAG, "Request abort:    $url")
-				return@launch
+				return@launchDelayed
 			}
 
 			if (networkError) {
@@ -112,9 +117,9 @@ abstract class WebResponseHandler<T> {
 		}
 	}
 
-	protected abstract fun parse(request: WebRequest, source: BufferedSource, responseCode: Int)
+	protected abstract fun parse(request: WebRequestInterface, source: BufferedSource, responseCode: Int)
 
-	protected abstract fun onReceiveResult(body: T?, error: BaseResponse.Error?, responseCode: Int, request: WebRequest)
+	protected abstract fun onReceiveResult(body: T?, error: BaseResponse.Error?, responseCode: Int, request: WebRequestInterface)
 
 
 	fun onNetworkError() {
@@ -129,7 +134,7 @@ abstract class WebResponseHandler<T> {
 	}
 
 
-	fun logWebResponseError(error: String?, request: WebRequest?, responseCode: Int?, responseBody: T?, networkError: Boolean = false) {
+	fun logWebResponseError(error: String?, request: WebRequestInterface?, responseCode: Int?, responseBody: T?, networkError: Boolean = false) {
 		injector.applicationScope.launch(Dispatchers.IO) {
 			WebResponseHandlerUtils.logWebResponseError(error, request, responseCode, responseBody, networkError)
 		}

@@ -9,7 +9,7 @@ abstract class RequestHandler<T> constructor(type: Type,
 											 request: RequestBase<*, *>) : ObjectHandler<T>(type, request) {
 
 	// parameter error is always null
-	override fun onReceiveResult(body: T?, error: BaseResponse.Error?, responseCode: Int, request: WebRequest) {
+	override fun onReceiveResult(body: T?, error: BaseResponse.Error?, responseCode: Int, request: WebRequestInterface) {
 		if (isSuccessfulResponse(responseCode)) {
 			if (body == null) {
 				onUnknownError()

@@ -17,7 +17,7 @@ import java.lang.reflect.Type
 abstract class ObjectHandler<T> internal constructor(private val type: Type,
 													 protected val request: RequestBase<*, *>) : WebResponseHandler<T>() {
 
-	override fun parse(request: WebRequest, source: BufferedSource, responseCode: Int) {
+	override fun parse(request: WebRequestInterface, source: BufferedSource, responseCode: Int) {
 		try {
 			var obj: T? = null
 			var error: BaseResponse.Error? = null
