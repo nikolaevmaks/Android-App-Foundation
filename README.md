@@ -5,6 +5,7 @@
 <br/><br/>
 App uses MVP architecture with custom implementation of Fragment which is simple to use unlike Android standard Fragment.
 See *BaseActivity* / *BasePresenter*, *BaseFragment* / *BaseFragmentPresenter*, *RequestBase* classes.
+Fragment is just a simple View + lifecycle similar to Android Fragment lifecycle.
 
 Also I use app architecture something like Android ViewModel, but it is more customizable and flexible, you can customize everything as you want.
 See *RequestBase*, *RequestsObserver*, *RequestWaitPerformer* classes.
@@ -22,3 +23,6 @@ Explains how you can use custom annotations, such as *@Required*, *@CollectionWi
 *FlexibleTextView*<br/>
 Custom TextView implementation which allows to answer questions about text layout, such as ellipsized text or not, maximum available lines count
 depending on the available text width and height.
+
+*ColorUtils*<br/>
+Many useful methods for color adjusting
