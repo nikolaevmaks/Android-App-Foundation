@@ -1,17 +1,18 @@
 package com.application.foundation.features.common.model.utils;
 
 import androidx.annotation.Nullable;
+import com.application.foundation.utils.DateYYYYMMDDTHHMMSS_SSSZ;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import kotlin.Lazy;
+import kotlin.properties.ReadWriteProperty;
 
-// TODO omit transient fields
-// TODO add CollectionWithoutNullsNotRequired annotation
 public class JsonValidationRequiredAnnotationChecker implements JsonValidater {
 
 	@Override
@@ -19,7 +20,12 @@ public class JsonValidationRequiredAnnotationChecker implements JsonValidater {
 			AnnotationMisuseException,
 			JsonValidationException {
 
-		if (object != null && !isObjectPrimitive(object) && object.getClass() != String.class) {
+		if (object != null &&
+			!isObjectPrimitive(object) &&
+			object.getClass() != String.class &&
+			object.getClass() != BigDecimal.class &&
+			object.getClass() != DateYYYYMMDDTHHMMSS_SSSZ.class) {
+
 			if (object instanceof List) {
 				for (Object element : (List) object) {
 					validate(element);
@@ -51,7 +57,10 @@ public class JsonValidationRequiredAnnotationChecker implements JsonValidater {
 			JsonValidationException {
 
 		for (Field field : declaredFields) {
-			if ((field.getModifiers() & Modifier.STATIC) == 0 && field.getType() != Lazy.class) { // Lazy.class for by lazy in Kotlin, see Currency class
+			if ((field.getModifiers() & Modifier.STATIC) == 0 &&
+				(field.getModifiers() & Modifier.TRANSIENT) == 0 &&
+				 field.getType() != Lazy.class && // Lazy.class for by lazy in Kotlin, see Currency class
+				 field.getType() != ReadWriteProperty.class) { // ReadWriteProperty for Delegates.notNull(), see CartContentForCheckoutResponse class
 
 				Annotation[] annotations = field.getAnnotations();
 
