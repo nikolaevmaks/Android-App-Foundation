@@ -23,3 +23,6 @@ Explains how you can use custom annotations, such as *@Required*, *@CollectionWi
 *FlexibleTextView*<br/>
 Custom TextView implementation which allows to answer questions about text layout, such as ellipsized text or not, maximum available lines count
 depending on the available text width and height.
+
+*ColorUtils*<br/>
+Many useful methods for color adjusting
