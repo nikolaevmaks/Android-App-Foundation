@@ -3,6 +3,7 @@ package com.application.foundation.features.common.model
 import com.application.foundation.features.common.model.RequestBase.OnAbortListener
 import com.application.foundation.features.common.model.utils.Abortable
 import com.application.foundation.features.common.model.utils.AbortableResult
+import com.application.foundation.features.common.model.utils.RequestError
 
 open class RequestWaitPerformer @JvmOverloads constructor(private val target: RequestBase<*, *>,
 														  private val request: RequestBase<*, *>,
@@ -78,17 +79,16 @@ open class RequestWaitPerformer @JvmOverloads constructor(private val target: Re
 		target.removeListener(this, abortListener, false)
 	}
 
-	override fun onStateChanged() {
-
-		if (!target.isUpdating) {
+	override fun onStateUpdated(isUpdating: Boolean, error: RequestError<*>?) {
+		if (!isUpdating) {
 			removeListener()
 
-			if (target.error == null) {
+			if (error == null) {
 				handleOnCompleted()
 
 			} else if (fireRequestError) {
 				onError?.run()
-				request.fireError(target.error!!)
+				request.fireError(error)
 
 			} else {
 				handleOnCompleted()
