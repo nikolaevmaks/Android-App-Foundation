@@ -10,6 +10,7 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 	final override var isUpdating = false
 		private set
 
+
 	final override var error: RequestError<ErrorType>? = null
 		private set
 
@@ -19,8 +20,12 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 	private val onStateChangedListeners: MutableSet<Listener> = linkedSetOf()
 	private val onAbortListeners: MutableSet<OnAbortListener> = linkedSetOf()
 
-	private val onStateChangedListenersCache: MutableMap<String, Boolean> = mutableMapOf()
+	private val onStateChangedListenersCache: MutableMap<String, ListenerState> = mutableMapOf()
 	private val onAbortListenersCache: MutableMap<String, Boolean> = mutableMapOf()
+
+	private enum class ListenerState {
+		Initial, Started, Stopped
+	}
 
 	final override var request: Abortable? = null
 		private set
@@ -43,7 +48,7 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 
 		val listenerName = getListenerClassName(listener)
 		if (!onStateChangedListenersCache.containsKey(listenerName)) {
-			onStateChangedListenersCache[listenerName] = false
+			onStateChangedListenersCache[listenerName] = ListenerState.Initial
 		}
 
 		if (abortListener != null) {
@@ -55,7 +60,8 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 	}
 
 	final override fun isListenerCached(listener: Listener): Boolean {
-		return java.lang.Boolean.TRUE == onStateChangedListenersCache[getListenerClassName(listener)]
+		val state = onStateChangedListenersCache[getListenerClassName(listener)]
+		return state != null && state != ListenerState.Initial
 	}
 
 
@@ -63,15 +69,15 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 
 		onStateChangedListeners.add(listener)
 
-		var stateChanged = onStateChangedListenersCache.remove(getListenerClassName(listener))
-		if (java.lang.Boolean.TRUE == stateChanged) {
-			listener.onStateChanged()
+		val state = onStateChangedListenersCache.remove(getListenerClassName(listener))
+		if (state != null && state != ListenerState.Initial) { //java.lang.Boolean.TRUE == stateChanged
+			listener.onStateChanged(isUpdated = state == ListenerState.Stopped, isUpdating = isUpdating, error = error)
 		}
 
 		if (abortListener != null) {
 			onAbortListeners.add(abortListener)
 
-			stateChanged = onAbortListenersCache.remove(CommonUtils.getClassNameFull(abortListener))
+			val stateChanged = onAbortListenersCache.remove(CommonUtils.getClassNameFull(abortListener))
 			if (java.lang.Boolean.TRUE == stateChanged) {
 				abortListener.onAbort()
 			}
@@ -92,7 +98,7 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 		var exists = onStateChangedListeners.remove(listener)
 		if (temporarily) {
 			if (exists) {
-				onStateChangedListenersCache[listenerName] = false
+				onStateChangedListenersCache[listenerName] = ListenerState.Initial
 			}
 		} else {
 			onStateChangedListenersCache.remove(listenerName)
@@ -113,11 +119,23 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 	}
 
 	final override fun notifyListeners() {
+		notifyListeners(started = false)
+	}
+
+	private fun notifyListeners(started: Boolean) {
+
 		for (listener in listeners) {
-			listener.onStateChanged()
+			listener.onStateChanged(isUpdated = !started, isUpdating = isUpdating, error = error)
 		}
-		for (name in onStateChangedListenersCache.keys) {
-			onStateChangedListenersCache[name] = true
+		for ((name, state) in onStateChangedListenersCache.entries) {
+			onStateChangedListenersCache[name] = updateListenerState(currentState = state, newState = if (started) ListenerState.Started else ListenerState.Stopped)
+		}
+	}
+
+	private fun updateListenerState(currentState: ListenerState, newState: ListenerState): ListenerState {
+		return when (currentState) {
+			ListenerState.Stopped -> ListenerState.Stopped
+			else -> newState
 		}
 	}
 
@@ -135,26 +153,29 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 		startRequest(null, request)
 	}
 
-
 	final override fun startRequest(state: StateType?, request: Abortable?) {
 		error = null
+
 		isUpdating = true
+
 		this.state = state
 		this.request = request
 
 		observer?.onStart()
 
-		notifyListeners()
+		notifyListeners(started = true)
 	}
 
 	final override fun continueRequest(request: Abortable): Abortable {
 		if (isUpdating) {
+			error = null
+
 			this.request = request
+
+			observer?.onContinue()
 		} else {
 			startRequest(request)
 		}
-
-		observer?.onContinue()
 
 		return request
 	}
@@ -177,6 +198,8 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 			it.abort()
 			request = null
 		}
+		// it is possible to call abortRequest() instead of abort() before clear(). see ProductsInStore
+		isUpdating = false
 	}
 
 	@CallSuper
@@ -233,8 +256,57 @@ abstract class RequestBase<ErrorType, StateType> : Abortable, RequestBaseInterfa
 		val listenerClassNamePrefix: String
 	}
 
-	fun interface Listener {
-		fun onStateChanged()
+	interface Listener {
+
+		fun onStateChanged(isUpdated: Boolean, isUpdating: Boolean, error: RequestError<*>?) {
+			onStateChanged(isUpdated)
+
+			if (isUpdated) {
+				onStateUpdated(isUpdating, error)
+			}
+			updateProgress()
+		}
+
+
+		fun onStateChanged(isUpdated: Boolean) {
+			onStateChanged()
+		}
+
+		fun onStateChanged() {
+		}
+
+
+
+		fun onStateUpdated(isUpdating: Boolean, error: RequestError<*>?) {
+
+			onStateUpdated()
+
+			if (!isUpdating) {
+				onStateUpdatedNotUpdating()
+
+				if (error == null) {
+					onStateUpdatedWithoutError()
+				} else {
+					onError(error)
+				}
+			}
+		}
+
+
+		fun onStateUpdated() {
+		}
+
+		fun onStateUpdatedNotUpdating() {
+		}
+
+		fun onStateUpdatedWithoutError() {
+		}
+
+		fun onError(error: RequestError<*>) {
+		}
+
+		fun updateProgress() {
+		}
 	}
 
 	fun interface OnAbortListener {

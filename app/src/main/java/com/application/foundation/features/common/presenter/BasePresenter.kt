@@ -78,12 +78,15 @@ abstract class BasePresenter : PresenterInterface, RequestsListenersFeature.List
 		presenters.add(this)
 		checkAllFinishingActivities()
 
-		requestPermissionsModel = restoreOrCreateViewModel(RequestPermissionsModel.TAG) { RequestPermissionsModel() }
+		requestPermissionsModel = restoreOrCreateViewModel { RequestPermissionsModel() }
 
-		registerRequestListener(requestPermissionsModel) {
-			onRequestPermissionsResultSafe(requestPermissionsModel.requestCode,
+		registerRequestListener(requestPermissionsModel, object : RequestBase.Listener {
+
+			override fun onStateChanged() {
+				onRequestPermissionsResultSafe(requestPermissionsModel.requestCode,
 					requestPermissionsModel.permissions, requestPermissionsModel.grantResults)
-		}
+			}
+		})
 	}
 
 	protected open val analyticsScreenAttributes: Map<String, String>?
@@ -225,9 +228,6 @@ abstract class BasePresenter : PresenterInterface, RequestsListenersFeature.List
 		return viewModelFeature.restoreOrCreateViewModel(viewModelTag, viewModelCreator)
 	}
 
-	final override fun <ViewModel : Any> restoreOrCreateViewModel(viewModelCreator: Creator<ViewModel>): ViewModel {
-		return viewModelFeature.restoreOrCreateViewModel(viewModelCreator)
-	}
 
 	final override fun removeViewModels() {
 		viewModelFeature.removeViewModels()

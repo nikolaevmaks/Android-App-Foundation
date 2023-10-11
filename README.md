@@ -14,7 +14,7 @@ It uses OkHttp, Moshi libraries for network and JSON parsing. There are classes 
 
 App uses wrapper around Android SharedPreferences that simplifies work and adds support of "null" preference values.
 
-It also provides classes to easily log app events to any analytics, such as Firebase Analytics, AppMetrica, Sentry, Intercom...
+It also provides classes to easily log app events to any analytics
 
 Classes and example of easy pagination support in RecyclerView: *AdapterProductsState*, *Products*.
 

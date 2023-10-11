@@ -1,7 +1,6 @@
 package com.application.foundation.features.common.model.dto
 
 import com.squareup.moshi.JsonClass
-import com.application.foundation.utils.CommonUtils
 
 @JsonClass(generateAdapter = true)
 open class BaseResponseWithWarning : BaseResponse() {
@@ -27,7 +26,7 @@ open class BaseResponseWithWarning : BaseResponse() {
 				val sb = StringBuilder()
 				if (fields != null) {
 					for ((_, field) in fields) {
-						if (field != null && !CommonUtils.isStringEmpty(field.message)) {
+						if (field != null && !field.message.isNullOrEmpty()) {
 							if (sb.isNotEmpty()) {
 								sb.append('\n')
 							}
@@ -35,7 +34,7 @@ open class BaseResponseWithWarning : BaseResponse() {
 						}
 					}
 				}
-				if (sb.isEmpty() && !CommonUtils.isStringEmpty(message)) {
+				if (sb.isEmpty() && !message.isNullOrEmpty()) {
 					sb.append(message)
 				}
 				return if (sb.isEmpty()) null else sb.toString()

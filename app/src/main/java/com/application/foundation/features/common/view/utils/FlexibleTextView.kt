@@ -47,12 +47,20 @@ class FlexibleTextView : View {
 	constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
 
+	var allowRequestLayout = true
+
+	private fun requestLayoutCustom() {
+		if (allowRequestLayout) {
+			requestLayoutIfRequired()
+		}
+	}
+
 	var text: CharSequence = ""
 		set(value) {
 			if (field != value) {
 				field = value
 
-				requestLayoutIfRequired()
+				requestLayoutCustom()
 			}
 		}
 
@@ -68,7 +76,7 @@ class FlexibleTextView : View {
 
 				field = color
 
-				requestLayoutIfRequired()
+				requestLayoutCustom()
 			}
 		}
 
@@ -85,12 +93,16 @@ class FlexibleTextView : View {
 
 				field = size
 
-				requestLayoutIfRequired()
+				requestLayoutCustom()
 			}
 		}
 
 	fun setTextSizeDp(sizeDp: Float) {
 		textSize = CommonUtils.dpToPxPrecise(context, sizeDp)
+	}
+
+	fun setTextSizeSp(sizeSp: Float) {
+		textSize = CommonUtils.spToPxPrecise(context, sizeSp)
 	}
 
 
@@ -102,16 +114,17 @@ class FlexibleTextView : View {
 
 				field = typeface
 
-				requestLayoutIfRequired()
+				requestLayoutCustom()
 			}
 		}
+
 
 
 	var lineSpacingExtra: Float = 0f
 		set(lineSpacingExtra) {
 			field = lineSpacingExtra
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
 
@@ -119,14 +132,14 @@ class FlexibleTextView : View {
 		set(ellipsize) {
 			field = ellipsize
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
 	var alignment: Layout.Alignment = Layout.Alignment.ALIGN_NORMAL
 		set(alignment) {
 			field = alignment
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
 
@@ -134,14 +147,14 @@ class FlexibleTextView : View {
 		set(hyphenationFrequency) {
 			field = hyphenationFrequency
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
-	var breakStrategy: Int = LineBreaker.BREAK_STRATEGY_SIMPLE
+	var breakStrategy: Int = Layout.BREAK_STRATEGY_SIMPLE
 		set(breakStrategy) {
 			field = breakStrategy
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
 
@@ -149,7 +162,7 @@ class FlexibleTextView : View {
 		set(drawablePadding) {
 			field = drawablePadding
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
 	fun setDrawablePaddingDp(sizeDp: Float) {
@@ -163,7 +176,7 @@ class FlexibleTextView : View {
 				setBounds(0, 0, intrinsicWidth, intrinsicHeight)
 			}
 
-			requestLayoutIfRequired()
+			requestLayoutCustom()
 		}
 
 	fun setDrawableLeftRes(@DrawableRes drawableRes: Int) {
@@ -209,55 +222,56 @@ class FlexibleTextView : View {
 	@SuppressLint("NewApi")
 	fun measureLayout(width: Int, maxLinesCount: Int): MeasureResult {
 
-		val width = width - paddingLeft - paddingRight - drawableWidth
-		return if (width <= 0) {
-			MeasureResult(false, false, 0)
-		} else {
-			createLayout(width, maxLinesCount)
+		val width = max(0, width - paddingLeft - paddingRight - drawableWidth)
 
-			MeasureResult(!isTextEllipsized(), true, maxLinesCount)
-		}
+		createLayout(width, maxLinesCount)
+
+		return MeasureResult(isEnoughSpace = width != 0 && !isTextEllipsized,
+			isTextMeasured = true,
+			maxLinesCount)
 	}
 
 
-	@SuppressLint("NewApi")
 	fun measureLayout(width: Int, maxHeight: Int, forceMeasure: Boolean): MeasureResult {
+		return measureLayout(width, maxHeight, maxLinesCount = Int.MAX_VALUE, forceMeasure)
+	}
 
-		val width = width - paddingLeft - paddingRight - drawableWidth
-		val height = maxHeight.toFloat() - paddingTop - paddingBottom
+	fun measureLayout(width: Int, maxHeight: Int, maxLinesCount: Int, forceMeasure: Boolean): MeasureResult {
 
-		if (width <= 0 || height - drawableHeight <= 0) {
-			return MeasureResult(false, false, 0)
-		}
+		val width = max(0, width - paddingLeft - paddingRight - drawableWidth)
+		val height = max(0f, maxHeight.toFloat() - paddingTop - paddingBottom)
 
 		createPaintIfRequired()
 
 		val linesCountAvailable = TextDimensionsUtils.getTextMaxLinesCount(
 			height,
-			getTextLineHeight(),
+			textLineHeight,
 			lineSpacingExtra)
 
 		val isTextMeasured = linesCountAvailable > 0 || forceMeasure
 		if (isTextMeasured) {
-			createLayout(width, max(1, linesCountAvailable))
+			createLayout(width, min(max(1, linesCountAvailable), maxLinesCount))
 		}
 
-		return MeasureResult(linesCountAvailable > 0 &&
-				maxHeight - (max(layout.height, drawableHeight) + paddingTop + paddingBottom) >= 0 &&
-				!isTextEllipsized(),
+		return MeasureResult(isEnoughSpace =
+		width != 0 && height != 0f && height - drawableHeight >= 0 &&
 
-				isTextMeasured,
+				linesCountAvailable > 0 &&
+				maxHeight - (max(layout.height, drawableHeight) + paddingTop + paddingBottom) + CommonUtils.dpToPx(context, 4) >= 0 && // CommonUtils.dpToPx(context, 4) is for additional safety
+				!isTextEllipsized,
 
-				linesCountAvailable)
+			isTextMeasured = isTextMeasured,
+
+			linesCountAvailable)
 	}
 
-	private fun getTextLineHeight(): Float {
-		return textPaint.fontSpacing
-	}
+	private val textLineHeight: Float
+		get() = TextDimensionsUtils.getTextLineHeight(textPaint)
 
-	fun getLinesCount(): Int {
-		return layout.lineCount
-	}
+
+	val linesCount: Int
+		get() = layout.lineCount
+
 
 	@SuppressLint("NewApi")
 	private fun createLayout(width: Int, maxLinesCount: Int = Int.MAX_VALUE) {
@@ -265,33 +279,32 @@ class FlexibleTextView : View {
 		createPaintIfRequired()
 
 		layoutNullable = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, width)
-				.setLineSpacing(lineSpacingExtra, 1f)
-				.setEllipsize(ellipsize)
+			.setLineSpacing(lineSpacingExtra, 1f)
+			.setEllipsize(ellipsize)
 
-				.setHyphenationFrequency(hyphenationFrequency)
-				.setBreakStrategy(breakStrategy)
+			.setHyphenationFrequency(hyphenationFrequency)
+			.setBreakStrategy(breakStrategy)
 
-				.setMaxLines(maxLinesCount)
+			.setMaxLines(maxLinesCount)
 
-				.setAlignment(alignment)
+			.setAlignment(alignment)
 
-				.build()
+			.build()
 
 		measureAsLayout()
 	}
 
-	fun isTextEllipsized(): Boolean {
-		return layout.text.toString().lowercase(Locale.getDefault()) !=
-				text.toString().lowercase(Locale.getDefault())
-	}
-
-
 	private fun measureAsLayout() {
 		if (layoutNullable != null) {
 			setMeasuredDimension(layout.width + paddingLeft + paddingRight + drawableWidth,
-								 paddingTop + paddingBottom + max(layout.height, drawableHeight))
+				paddingTop + paddingBottom + max(layout.height, drawableHeight))
 		}
 	}
+
+	val isTextEllipsized: Boolean
+		get() = layout.text.toString().lowercase(Locale.getDefault()) !=
+				text.toString().lowercase(Locale.getDefault())
+
 
 	override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
@@ -349,7 +362,7 @@ class FlexibleTextView : View {
 
 
 		setMeasuredDimension(textWidth + paddingLeft + paddingRight + drawableWidth,
-				paddingTop + paddingBottom + max(textHeight, drawableHeight))
+			paddingTop + paddingBottom + max(textHeight, drawableHeight))
 	}
 
 	override fun onDraw(canvas: Canvas) {
@@ -367,7 +380,7 @@ class FlexibleTextView : View {
 			val layoutTopShift = layoutTopShift_ - CommonUtils.dpToPxPrecise(context, if (drawableLeft == null) 0 else 1)
 
 			translate(paddingLeft.toFloat() + drawableLeftShift,
-					  paddingTop.toFloat() + layoutTopShift)
+				paddingTop.toFloat() + layoutTopShift)
 
 			layout.draw(canvas)
 

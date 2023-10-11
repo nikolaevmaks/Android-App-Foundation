@@ -263,10 +263,6 @@ abstract class BaseFragmentPresenter : FragmentPresenterInterface, RequestsListe
 		return viewModelFeature.restoreOrCreateViewModel(viewModelTag, viewModelCreator)
 	}
 
-	final override fun <ViewModel : Any> restoreOrCreateViewModel(viewModelCreator: Creator<ViewModel>): ViewModel {
-		return viewModelFeature.restoreOrCreateViewModel(viewModelCreator)
-	}
-
 	final override fun removeViewModels() {
 		viewModelFeature.removeViewModels()
 	}

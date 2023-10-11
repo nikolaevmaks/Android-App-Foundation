@@ -2,7 +2,6 @@ package com.application.foundation.features.common.model.dto
 
 import com.squareup.moshi.JsonClass
 import com.application.foundation.utils.CommonUtils
-
 @JsonClass(generateAdapter = true)
 open class BaseResponse {
 
@@ -31,7 +30,7 @@ open class BaseResponse {
 
 				if (fields != null) {
 					fields.values.asSequence()
-						.filter { it != null && !CommonUtils.isStringEmpty(it.message) }
+						.filter { it != null && !it.message.isNullOrEmpty() }
 						.forEach {
 							if (sb.isNotEmpty()) {
 								sb.append('\n')
@@ -40,7 +39,7 @@ open class BaseResponse {
 						}
 				}
 
-				if (sb.isEmpty() && !CommonUtils.isStringEmpty(message)) {
+				if (sb.isEmpty() && !message.isNullOrEmpty()) {
 					sb.append(message)
 				}
 				return if (sb.isEmpty()) null else sb.toString()

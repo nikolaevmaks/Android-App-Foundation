@@ -221,6 +221,17 @@ object CommonUtils {
 		return context.resources.displayMetrics.density
 	}
 
+
+	@JvmStatic
+	fun spToPxPrecise(context: Context, sp: Int): Float {
+		return spToPxPrecise(context, sp.toFloat())
+	}
+
+	@JvmStatic
+	fun spToPxPrecise(context: Context, sp: Float): Float {
+		return sp * context.resources.displayMetrics.scaledDensity
+	}
+
 	/**
 	 * Convert dp to px
 	 *
@@ -243,18 +254,24 @@ object CommonUtils {
 
 	@JvmStatic
 	fun isStringEmpty(text: CharSequence?): Boolean {
-		return text == null || text.isEmpty()
-	}
-
-	@JvmStatic
-	fun isStringEmpty(text: String?): Boolean {
-		return text == null || text.isEmpty()
+		return text.isNullOrEmpty()
 	}
 
 	@JvmStatic
 	fun isListEmpty(list: List<*>?): Boolean {
 		return list == null || list.isEmpty()
 	}
+
+	@JvmStatic
+	fun getTextViewText(textView: TextView): String {
+		return textView.text?.toString() ?: ""
+	}
+
+	@JvmStatic
+	fun getTextViewTextTrimmed(textView: TextView): String {
+		return textView.text?.trim()?.toString() ?: ""
+	}
+
 
 
 	@JvmStatic

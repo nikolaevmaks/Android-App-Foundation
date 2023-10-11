@@ -7,6 +7,7 @@ import com.application.foundation.features.checkout.model.Stripe
 import com.application.foundation.features.common.model.Acquisition
 import com.application.foundation.features.common.model.DetectCountry
 import com.application.foundation.features.common.model.Models
+import com.application.foundation.features.common.model.RequestBase
 import com.application.foundation.features.common.model.preferences.PreferenceInterface
 import com.application.foundation.features.profile.model.DeliveryAddress
 import com.application.foundation.features.profile.model.Profile
@@ -28,13 +29,16 @@ interface InjectorInterface {
 
 
 	@MainThread
-	fun <ViewModel> getViewModel(className: String, viewModelTag: String?): ViewModel?
+	fun <ViewModel : Any> getViewModel(className: String, viewModelTag: String?): ViewModel?
 
 	@MainThread
-	fun <ViewModel: Any> setViewModel(className: String, viewModelTag: String?, viewModel: ViewModel)
+	fun <ViewModel : Any> setViewModel(className: String, viewModelTag: String?, viewModel: ViewModel)
 
 	@MainThread
 	fun removeViewModels(className: String)
+
+	@MainThread
+	fun abortViewModels()
 
 
 	fun <T : Int?> getIntPreference(key: String, defaultValue: T): PreferenceInterface<T>
@@ -67,4 +71,12 @@ interface InjectorInterface {
 	val stripe: Stripe
 
 	val analytics: Analytics
+}
+
+inline fun <reified Class : Any, reified ViewModelTag : Any> InjectorInterface.abortViewModel() {
+	val viewModel = getViewModel<Any>(className = Class::class.java.name, viewModelTag = ViewModelTag::class.java.simpleName)
+
+	if (viewModel != null && viewModel is RequestBase<*, *>) {
+		viewModel.abort()
+	}
 }

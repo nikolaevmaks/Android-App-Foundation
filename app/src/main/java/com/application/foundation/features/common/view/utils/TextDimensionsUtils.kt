@@ -7,6 +7,7 @@ import android.graphics.Typeface
 import android.widget.TextView
 import android.text.TextUtils
 import android.text.TextPaint
+import com.application.foundation.utils.CommonUtils
 
 object TextDimensionsUtils {
 
@@ -20,12 +21,12 @@ object TextDimensionsUtils {
 
 		return Array<Point>(textRects.size) { i -> run {
 
-				val rect = textRects[i]
+			val rect = textRects[i]
 
-				Point((-rect.width()).toInt() / 2,
-						(-union.height() / 2 + bottom - paints[i].ascent()).toInt())
-						.also { bottom += rect.height() + textsTopDivider }
-			}
+			Point((-rect.width()).toInt() / 2,
+				(-union.height() / 2 + bottom - paints[i].ascent()).toInt())
+				.also { bottom += rect.height() + textsTopDivider }
+		}
 		}
 	}
 
@@ -52,7 +53,7 @@ object TextDimensionsUtils {
 	}
 
 	@JvmStatic
-	fun getTextHeight(paint: Paint): Float {
+	fun getTextLineHeight(paint: Paint): Float {
 		return -paint.ascent() + paint.descent()
 	}
 
@@ -63,11 +64,12 @@ object TextDimensionsUtils {
 
 	@JvmStatic
 	fun getTextLineHeight(typeface: Typeface, textSize: Float): Float {
-		return Paint().apply {
+
+		return getTextLineHeight(Paint().apply {
 			isAntiAlias = true
 			this.typeface = typeface
 			this.textSize = textSize
-		}.fontSpacing
+		}) //paint.fontSpacing
 	}
 
 	@JvmStatic
@@ -96,7 +98,7 @@ object TextDimensionsUtils {
 
 	@JvmStatic
 	fun getTextWidth(textView: TextView): Float {
-		val text = textView.text
+		val text = CommonUtils.getTextViewText(textView)
 		return textView.paint.measureText(text, 0, text.length)
 	}
 
@@ -106,9 +108,9 @@ object TextDimensionsUtils {
 		for (i in textRects.indices) {
 			val rect = textRects[i]
 			union.set(0f,
-					  0f,
-					  Math.max(union.right, rect.right),
-					  union.bottom + rect.height() + if (i == textRects.size - 1) 0 else textsTopDivider)
+				0f,
+				Math.max(union.right, rect.right),
+				union.bottom + rect.height() + if (i == textRects.size - 1) 0 else textsTopDivider)
 		}
 		return union
 	}

@@ -2,7 +2,9 @@ package com.application.foundation.features.shop.presenter
 
 import android.os.Bundle
 import com.application.foundation.features.common.model.RequestBase
+import com.application.foundation.features.common.model.utils.RequestError
 import com.application.foundation.features.common.presenter.BaseFragmentPresenter
+import com.application.foundation.features.common.presenter.restoreOrCreateViewModel
 import com.application.foundation.features.shop.model.Products
 import com.application.foundation.features.shop.model.dto.Product
 import com.application.foundation.features.shop.view.ProductsFragment
@@ -62,16 +64,21 @@ class ProductsPresenter : BaseFragmentPresenter(), ProductsPresenterInterface {
 	}
 
 
-	private val productsListener: RequestBase.Listener = RequestBase.Listener {
+	private val productsListener = object : RequestBase.Listener {
 
-		if (!products.isUpdating) {
+		override fun onStateUpdated() {
 			updateView()
+		}
 
-			if (products.error != null && !isContentVisible) {
-				fragment.showErrorSnackBarWithRetryOnNetworkError(products.error!!) { products.requestNextPageIfPossible() }
+		override fun onError(error: RequestError<*>) {
+			if (!isContentVisible) {
+				fragment.showErrorSnackBarWithRetryOnNetworkError(error) { products.requestNextPageIfPossible() }
 			}
 		}
-		updateContentAndProgressVisibility()
+
+		override fun updateProgress() {
+			updateContentAndProgressVisibility()
+		}
 	}
 
 
